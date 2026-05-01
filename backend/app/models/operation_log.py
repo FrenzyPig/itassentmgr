@@ -1,12 +1,12 @@
 from app import db
-from datetime import datetime
+from app.utils.timezone import get_beijing_time, to_beijing_time
 import uuid
 import json
 
 def format_datetime(dt):
     if dt is None:
         return None
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
+    return to_beijing_time(dt).strftime('%Y-%m-%d %H:%M:%S')
 
 class OperationLog(db.Model):
     __tablename__ = 'operation_logs'
@@ -19,7 +19,7 @@ class OperationLog(db.Model):
     action = db.Column(db.String(100), nullable=False)
     before_state = db.Column(db.Text)
     after_state = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_beijing_time)
 
     def to_dict(self):
         return {

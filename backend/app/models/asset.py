@@ -1,11 +1,11 @@
 from app import db
-from datetime import datetime
+from app.utils.timezone import get_beijing_time, to_beijing_time
 import uuid
 
 def format_datetime(dt):
     if dt is None:
         return None
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
+    return to_beijing_time(dt).strftime('%Y-%m-%d %H:%M:%S')
 
 class Asset(db.Model):
     __tablename__ = 'assets'
@@ -22,8 +22,8 @@ class Asset(db.Model):
     disk = db.Column(db.String(200))
     serial_number = db.Column(db.String(200))
     remark = db.Column(db.String(500))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_beijing_time)
+    updated_at = db.Column(db.DateTime, default=get_beijing_time, onupdate=get_beijing_time)
 
     mac_addresses = db.relationship('MacAddress', backref='asset', lazy=True, cascade='all, delete-orphan')
     usage_records = db.relationship('UsageRecord', backref='asset', lazy=True, cascade='all, delete-orphan')

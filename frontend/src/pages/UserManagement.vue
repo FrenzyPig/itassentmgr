@@ -125,7 +125,7 @@ const fetchUsers = async () => {
       pageSize: pageSize.value
     })
     
-    if (res.code === 200) {
+    if (res.success) {
       users.value = res.data.items
       total.value = res.data.total
     }
@@ -148,7 +148,7 @@ const handleAdd = async () => {
         username: addForm.username
       })
       
-      if (res.code === 200) {
+      if (res.success) {
         ElMessage.success(res.message || '用户创建成功')
         showAddDialog.value = false
         addForm.username = ''
@@ -181,7 +181,7 @@ const toggleBan = async (user: User) => {
       ? await userApi.unban(user.id)
       : await userApi.ban(user.id)
     
-    if (res.code === 200) {
+    if (res.success) {
       ElMessage.success(res.message || `${action}成功`)
       fetchUsers()
     } else {
@@ -208,7 +208,7 @@ const handleDelete = async (user: User) => {
     
     const res: any = await userApi.delete(user.id)
     
-    if (res.code === 200) {
+    if (res.success) {
       ElMessage.success('删除成功')
       fetchUsers()
     } else {
@@ -224,7 +224,7 @@ const handleDelete = async (user: User) => {
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN')
+  return date.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
 }
 </script>
 

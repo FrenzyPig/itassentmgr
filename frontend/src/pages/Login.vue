@@ -72,7 +72,7 @@ const handleLogin = async () => {
         password: form.password
       })
       
-      if (res.code === 200) {
+      if (res.success) {
         ElMessage.success('登录成功')
         localStorage.setItem('user', JSON.stringify(res.data.user))
         router.push('/assets')
