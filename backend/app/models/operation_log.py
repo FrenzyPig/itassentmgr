@@ -1,12 +1,7 @@
 from app import db
-from app.utils.timezone import get_beijing_time, to_beijing_time
+from app.utils.timezone import get_beijing_time, format_datetime
 import uuid
 import json
-
-def format_datetime(dt):
-    if dt is None:
-        return None
-    return to_beijing_time(dt).strftime('%Y-%m-%d %H:%M:%S')
 
 class OperationLog(db.Model):
     __tablename__ = 'operation_logs'

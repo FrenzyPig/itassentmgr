@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session, send_file
+from flask import Blueprint, request, jsonify, session, send_file, wraps
 from app import db
 from app.models.asset import Asset
 from app.models.mac_address import MacAddress
@@ -6,6 +6,7 @@ from app.services.asset_service import AssetService
 import pandas as pd
 from io import BytesIO
 import uuid
+from functools import wraps
 
 asset_bp = Blueprint('asset', __name__)
 
@@ -17,11 +18,18 @@ def require_login():
 def get_current_user():
     return session.get('username', 'system')
 
-@asset_bp.route('/assets', methods=['GET'])
-def get_assets():
-    if require_login():
-        return require_login()
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth_result = require_login()
+        if auth_result:
+            return auth_result
+        return f(*args, **kwargs)
+    return decorated_function
 
+@asset_bp.route('/assets', methods=['GET'])
+@login_required
+def get_assets():
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('pageSize', 20, type=int)
     asset_code = request.args.get('assetCode', '')
@@ -46,16 +54,26 @@ def get_assets():
     if device_id:
         query = query.filter(Asset.device_id.like(f'%{device_id}%'))
 
-    if mac:
-        query = query.join(MacAddress).filter(MacAddress.mac.like(f'%{mac.upper()}%'))
-    if ip:
-        query = query.join(MacAddress).filter(MacAddress.ip.like(f'%{ip}%'))
+    # 处理 MAC/IP 过滤，避免重复 join
+    if mac or ip:
+        query = query.join(MacAddress)
+        if mac:
+            query = query.filter(MacAddress.mac.like(f'%{mac.upper()}%'))
+        if ip:
+            query = query.filter(MacAddress.ip.like(f'%{ip}%'))
 
+    # 处理使用人过滤
     if user_name:
         from app.models.usage_record import UsageRecord
-        query = query.join(UsageRecord).filter(UsageRecord.user_name.like(f'%{user_name}%'))
+        # 使用 exists 子查询而不是 join，避免重复结果
+        query = query.filter(
+            db.session.query(UsageRecord).filter(
+                UsageRecord.asset_id == Asset.id,
+                UsageRecord.user_name.like(f'%{user_name}%')
+            ).exists()
+        )
 
-    query = query.order_by(Asset.created_at.desc())
+    query = query.order_by(Asset.created_at.desc()).distinct()
 
     total = query.count()
     assets = query.offset((page - 1) * page_size).limit(page_size).all()
@@ -71,10 +89,8 @@ def get_assets():
     })
 
 @asset_bp.route('/assets/<asset_id>', methods=['GET'])
+@login_required
 def get_asset(asset_id):
-    if require_login():
-        return require_login()
-
     asset = Asset.query.get(asset_id)
     if not asset:
         return jsonify({'code': 404, 'message': 'Asset not found'}), 404
@@ -85,10 +101,8 @@ def get_asset(asset_id):
     })
 
 @asset_bp.route('/assets', methods=['POST'])
+@login_required
 def create_asset():
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     data['operator'] = get_current_user()
 
@@ -105,10 +119,8 @@ def create_asset():
     })
 
 @asset_bp.route('/assets/<asset_id>', methods=['PUT'])
+@login_required
 def update_asset(asset_id):
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     data['operator'] = get_current_user()
 
@@ -122,10 +134,8 @@ def update_asset(asset_id):
     })
 
 @asset_bp.route('/assets/<asset_id>', methods=['DELETE'])
+@login_required
 def delete_asset(asset_id):
-    if require_login():
-        return require_login()
-
     operator = request.args.get('operator', get_current_user())
 
     result, error = AssetService.delete_asset(asset_id, operator)
@@ -138,10 +148,8 @@ def delete_asset(asset_id):
     })
 
 @asset_bp.route('/assets/<asset_id>/claim', methods=['POST'])
+@login_required
 def claim_asset(asset_id):
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     data['operator'] = get_current_user()
 
@@ -158,10 +166,8 @@ def claim_asset(asset_id):
     })
 
 @asset_bp.route('/assets/<asset_id>/retire', methods=['POST'])
+@login_required
 def retire_asset(asset_id):
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     data['operator'] = get_current_user()
 
@@ -175,10 +181,8 @@ def retire_asset(asset_id):
     })
 
 @asset_bp.route('/assets/<asset_id>/change-user', methods=['POST'])
+@login_required
 def change_asset_user(asset_id):
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     data['operator'] = get_current_user()
 
@@ -195,10 +199,8 @@ def change_asset_user(asset_id):
     })
 
 @asset_bp.route('/assets/<asset_id>/return', methods=['POST'])
+@login_required
 def return_to_storage(asset_id):
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     data['operator'] = get_current_user()
 
@@ -212,10 +214,8 @@ def return_to_storage(asset_id):
     })
 
 @asset_bp.route('/assets/pending', methods=['GET'])
+@login_required
 def get_pending_assets():
-    if require_login():
-        return require_login()
-
     assets = AssetService.get_pending_assets()
 
     return jsonify({
@@ -224,10 +224,8 @@ def get_pending_assets():
     })
 
 @asset_bp.route('/assets/<asset_id>/mac', methods=['POST'])
+@login_required
 def add_mac_address(asset_id):
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     data['operator'] = get_current_user()
 
@@ -244,10 +242,8 @@ def add_mac_address(asset_id):
     })
 
 @asset_bp.route('/mac/<mac_id>', methods=['DELETE'])
+@login_required
 def delete_mac_address(mac_id):
-    if require_login():
-        return require_login()
-
     operator = request.args.get('operator', get_current_user())
 
     result, error = AssetService.delete_mac_address(mac_id, operator)
@@ -260,10 +256,8 @@ def delete_mac_address(mac_id):
     })
 
 @asset_bp.route('/mac/<mac_id>', methods=['PUT'])
+@login_required
 def update_mac_address(mac_id):
-    if require_login():
-        return require_login()
-
     data = request.get_json()
     operator = data.get('operator', get_current_user())
 
@@ -277,9 +271,8 @@ def update_mac_address(mac_id):
     })
 
 @asset_bp.route('/assets/import/template', methods=['GET'])
+@login_required
 def download_import_template():
-    if require_login():
-        return require_login()
 
     data = {
         '机器型号': ['联想 ThinkPad X1 Carbon'],
@@ -309,10 +302,8 @@ def download_import_template():
     )
 
 @asset_bp.route('/assets/import', methods=['POST'])
+@login_required
 def import_assets():
-    if require_login():
-        return require_login()
-
     if not session.get('is_admin'):
         return jsonify({'code': 403, 'message': '只有管理员可以导入资产'}), 403
 
@@ -338,6 +329,7 @@ def import_assets():
             'errors': []
         }
 
+        # 使用事务导入所有资产
         for index, row in df.iterrows():
             try:
                 row_idx = index + 2

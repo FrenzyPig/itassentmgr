@@ -2,6 +2,7 @@
   <div class="asset-detail">
     <el-button @click="$router.back()">返回</el-button>
     <el-button type="primary" @click="openEditDialog">编辑</el-button>
+    <el-button type="danger" @click="openDeleteAssetDialog">删除</el-button>
 
     <el-card v-loading="store.loading" style="margin-top: 16px">
       <template #header>
@@ -146,24 +147,35 @@
         <el-button type="danger" @click="confirmDeleteNetwork" :loading="networkLoading">删除</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="showDeleteAssetConfirm" title="删除资产确认" width="400px">
+      <p>确定要删除该资产吗？此操作不可恢复！</p>
+      <template #footer>
+        <el-button @click="showDeleteAssetConfirm = false">取消</el-button>
+        <el-button type="danger" @click="confirmDeleteAsset" :loading="deleteAssetLoading">删除</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAssetStore } from '../stores/asset'
 import { assetApi } from '../api/asset'
 
 const route = useRoute()
+const router = useRouter()
 const store = useAssetStore()
 
 const showEditDialog = ref(false)
 const editLoading = ref(false)
 const showNetworkDialog = ref(false)
 const showDeleteConfirm = ref(false)
+const showDeleteAssetConfirm = ref(false)
 const networkLoading = ref(false)
+const deleteAssetLoading = ref(false)
 const editingMacId = ref('')
 
 const loading = ref(false)
@@ -362,6 +374,26 @@ async function confirmDeleteNetwork() {
     ElMessage.error(error.message || '删除失败')
   } finally {
     networkLoading.value = false
+  }
+}
+
+function openDeleteAssetDialog() {
+  showDeleteAssetConfirm.value = true
+}
+
+async function confirmDeleteAsset() {
+  if (!asset.value) return
+
+  deleteAssetLoading.value = true
+  try {
+    await store.deleteAsset(asset.value.id, currentUser.value)
+    ElMessage.success('删除成功')
+    showDeleteAssetConfirm.value = false
+    router.push('/assets')
+  } catch (error: any) {
+    ElMessage.error(error.message || '删除失败')
+  } finally {
+    deleteAssetLoading.value = false
   }
 }
 
