@@ -15,7 +15,8 @@ const router = createRouter({
     {
       path: '/users',
       name: 'user-management',
-      component: () => import('../pages/UserManagement.vue')
+      component: () => import('../pages/UserManagement.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/assets',
@@ -48,6 +49,28 @@ const router = createRouter({
       component: () => import('../pages/OperationLog.vue')
     }
   ]
+})
+
+router.beforeEach((to, _from, next) => {
+  const userStr = localStorage.getItem('user')
+  let user = null
+  if (userStr) {
+    try {
+      user = JSON.parse(userStr)
+    } catch {
+      localStorage.removeItem('user')
+    }
+  }
+
+  if (to.path !== '/login' && !user) {
+    next('/login')
+  } else if (to.path === '/login' && user) {
+    next('/assets')
+  } else if (to.meta.requiresAdmin && !user?.is_admin) {
+    next('/assets')
+  } else {
+    next()
+  }
 })
 
 export default router

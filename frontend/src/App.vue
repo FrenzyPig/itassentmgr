@@ -93,15 +93,9 @@ const checkUserLogin = () => {
     } catch {
       localStorage.removeItem('user')
       user.value = null
-      if (route.path !== '/login') {
-        router.push('/login')
-      }
     }
   } else {
     user.value = null
-    if (route.path !== '/login') {
-      router.push('/login')
-    }
   }
 }
 
@@ -148,14 +142,14 @@ const handleChangePassword = async () => {
         newPassword: passwordForm.newPassword
       })
       
-      if (res.success) {
+      if (res.code === 200) {
         ElMessage.success('密码修改成功')
         showPasswordDialog.value = false
       } else {
         ElMessage.error(res.message || '修改失败')
       }
     } catch (error: any) {
-      ElMessage.error(error.response?.data?.message || '修改失败')
+      ElMessage.error(error.response?.data?.message || error.message || '修改失败')
     } finally {
       passwordLoading.value = false
     }

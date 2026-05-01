@@ -217,6 +217,7 @@ const networkDetails = computed<NetworkDetail[]>(() => {
   const macs = asset.value.mac_addresses || []
 
   return macs.map(mac => ({
+    id: mac.id,
     macId: mac.id,
     mac: mac.mac,
     macType: mac.remark || '',

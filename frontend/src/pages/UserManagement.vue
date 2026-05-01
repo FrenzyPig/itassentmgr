@@ -125,12 +125,12 @@ const fetchUsers = async () => {
       pageSize: pageSize.value
     })
     
-    if (res.success) {
+    if (res.code === 200) {
       users.value = res.data.items
       total.value = res.data.total
     }
-  } catch (error) {
-    ElMessage.error('获取用户列表失败')
+  } catch (error: any) {
+    ElMessage.error(error.response?.data?.message || error.message || '获取用户列表失败')
   } finally {
     loading.value = false
   }
@@ -148,7 +148,7 @@ const handleAdd = async () => {
         username: addForm.username
       })
       
-      if (res.success) {
+      if (res.code === 200) {
         ElMessage.success(res.message || '用户创建成功')
         showAddDialog.value = false
         addForm.username = ''
@@ -157,7 +157,7 @@ const handleAdd = async () => {
         ElMessage.error(res.message || '创建失败')
       }
     } catch (error: any) {
-      ElMessage.error(error.response?.data?.message || '创建失败')
+      ElMessage.error(error.response?.data?.message || error.message || '创建失败')
     } finally {
       addLoading.value = false
     }
@@ -181,7 +181,7 @@ const toggleBan = async (user: User) => {
       ? await userApi.unban(user.id)
       : await userApi.ban(user.id)
     
-    if (res.success) {
+    if (res.code === 200) {
       ElMessage.success(res.message || `${action}成功`)
       fetchUsers()
     } else {
@@ -189,7 +189,7 @@ const toggleBan = async (user: User) => {
     }
   } catch (error: any) {
     if (error !== 'cancel') {
-      ElMessage.error(error.response?.data?.message || `${action}失败`)
+      ElMessage.error(error.response?.data?.message || error.message || `${action}失败`)
     }
   }
 }
@@ -208,7 +208,7 @@ const handleDelete = async (user: User) => {
     
     const res: any = await userApi.delete(user.id)
     
-    if (res.success) {
+    if (res.code === 200) {
       ElMessage.success('删除成功')
       fetchUsers()
     } else {
@@ -216,7 +216,7 @@ const handleDelete = async (user: User) => {
     }
   } catch (error: any) {
     if (error !== 'cancel') {
-      ElMessage.error(error.response?.data?.message || '删除失败')
+      ElMessage.error(error.response?.data?.message || error.message || '删除失败')
     }
   }
 }
