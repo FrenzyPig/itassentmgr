@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: doto-asset-backend
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-your-production-secret-key-here}
+    volumes:
+      - ./instance:/app/instance
+    networks:
+      - doto-asset-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: doto-asset-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - doto-asset-network
+    restart: unless-stopped
+
+networks:
+  doto-asset-network:
+    driver: bridge
