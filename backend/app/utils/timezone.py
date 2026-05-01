@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
-CST = timezone(datetime.timedelta(hours=8))
+CST = timezone(timedelta(hours=8))
 
 
 def get_beijing_time():
