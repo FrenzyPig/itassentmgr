@@ -1,15 +1,11 @@
-from datetime import datetime, timezone, timedelta
-
-CST = timezone(timedelta(hours=8))
+from datetime import datetime
 
 
 def get_beijing_time():
-    return datetime.now(CST)
+    # 直接使用本地时间
+    return datetime.now()
 
 
 def to_beijing_time(dt):
-    if dt is None:
-        return None
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(CST)
+    # 直接返回本地时间，不做时区转换
+    return dt
