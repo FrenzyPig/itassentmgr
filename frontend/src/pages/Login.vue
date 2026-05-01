@@ -72,7 +72,7 @@ const handleLogin = async () => {
         password: form.password
       })
       
-      if (res.success) {
+      if (res.code === 200) {
         ElMessage.success('登录成功')
         localStorage.setItem('user', JSON.stringify(res.data.user))
         router.push('/assets')
@@ -80,7 +80,7 @@ const handleLogin = async () => {
         ElMessage.error(res.message || '登录失败')
       }
     } catch (error: any) {
-      ElMessage.error(error.response?.data?.message || '登录失败')
+      ElMessage.error(error.response?.data?.message || error.message || '登录失败')
     } finally {
       loading.value = false
     }
