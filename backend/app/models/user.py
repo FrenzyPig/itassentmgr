@@ -1,5 +1,5 @@
 from app import db
-from datetime import datetime
+from app.utils.timezone import get_beijing_time, to_beijing_time
 import hashlib
 
 class User(db.Model):
@@ -10,7 +10,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_banned = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_beijing_time)
     
     def set_password(self, password):
         self.password_hash = hashlib.sha256(password.encode()).hexdigest()
@@ -24,5 +24,5 @@ class User(db.Model):
             'username': self.username,
             'is_admin': self.is_admin,
             'is_banned': self.is_banned,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': to_beijing_time(self.created_at).isoformat() if self.created_at else None
         }

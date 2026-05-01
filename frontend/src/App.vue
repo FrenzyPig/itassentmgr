@@ -142,7 +142,7 @@ const handleChangePassword = async () => {
         newPassword: passwordForm.newPassword
       })
       
-      if (res.code === 200) {
+      if (res.success) {
         ElMessage.success('密码修改成功')
         showPasswordDialog.value = false
       } else {

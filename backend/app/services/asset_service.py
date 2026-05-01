@@ -3,7 +3,7 @@ from app.models.asset import Asset
 from app.models.mac_address import MacAddress
 from app.models.usage_record import UsageRecord
 from app.models.operation_log import OperationLog
-from datetime import datetime
+from app.utils.timezone import get_beijing_time
 import time
 import json
 
@@ -14,7 +14,7 @@ class AssetService:
 
     @staticmethod
     def generate_temp_code():
-        today = datetime.now().strftime('%Y%m%d')
+        today = get_beijing_time().strftime('%Y%m%d')
         prefix = f'NEW_{today}'
 
         existing = Asset.query.filter(Asset.asset_code.like(f'{prefix}%')).all()
@@ -104,7 +104,7 @@ class AssetService:
         usage_record = UsageRecord(
             asset_id=asset.id,
             user_name=usage_user,
-            start_time=datetime.utcnow(),
+            start_time=get_beijing_time(),
             operation_type='入库',
             operator=operator,
             ip_addresses=network_info
@@ -184,7 +184,7 @@ class AssetService:
         ).first()
 
         if active_record:
-            active_record.end_time = datetime.utcnow()
+            active_record.end_time = get_beijing_time()
 
         operator = data.get('operator', 'system')
 
@@ -209,7 +209,7 @@ class AssetService:
         new_record = UsageRecord(
             asset_id=asset_id,
             user_name=data.get('user_name'),
-            start_time=datetime.utcnow(),
+            start_time=get_beijing_time(),
             operation_type='领用',
             operator=operator,
             ip_addresses=network_info
@@ -248,7 +248,7 @@ class AssetService:
         operator = data.get('operator', 'system')
 
         if active_record:
-            active_record.end_time = datetime.utcnow()
+            active_record.end_time = get_beijing_time()
 
         asset.status = '报废'
 
@@ -303,12 +303,12 @@ class AssetService:
         network_info = '|'.join(network_info_list)
 
         if active_record:
-            active_record.end_time = datetime.utcnow()
+            active_record.end_time = get_beijing_time()
 
         new_record = UsageRecord(
             asset_id=asset_id,
             user_name=data.get('user_name'),
-            start_time=datetime.utcnow(),
+            start_time=get_beijing_time(),
             operation_type='领用',
             operator=operator,
             ip_addresses=network_info
@@ -345,12 +345,12 @@ class AssetService:
         operator = data.get('operator', 'system')
 
         if active_record:
-            active_record.end_time = datetime.utcnow()
+            active_record.end_time = get_beijing_time()
 
         new_record = UsageRecord(
             asset_id=asset_id,
             user_name='在库',
-            start_time=datetime.utcnow(),
+            start_time=get_beijing_time(),
             operation_type='入库',
             operator=operator
         )
@@ -458,12 +458,12 @@ class AssetService:
             new_network_info = '|'.join(new_network_info_list)
 
             if old_network_info != new_network_info:
-                active_record.end_time = datetime.utcnow()
+                active_record.end_time = get_beijing_time()
 
                 new_record = UsageRecord(
                     asset_id=mac.asset_id,
                     user_name=active_record.user_name,
-                    start_time=datetime.utcnow(),
+                    start_time=get_beijing_time(),
                     operation_type='修改',
                     operator=operator,
                     ip_addresses=new_network_info
