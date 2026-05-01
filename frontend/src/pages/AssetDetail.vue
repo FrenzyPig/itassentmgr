@@ -2,7 +2,7 @@
   <div class="asset-detail">
     <el-button @click="$router.back()">返回</el-button>
     <el-button type="primary" @click="openEditDialog">编辑</el-button>
-    <el-button type="danger" @click="openDeleteAssetDialog">删除</el-button>
+    <el-button v-if="isAdmin" type="danger" @click="openDeleteAssetDialog">删除</el-button>
 
     <el-card v-loading="store.loading" style="margin-top: 16px">
       <template #header>
@@ -221,6 +221,19 @@ const currentUser = computed(() => {
     }
   }
   return 'admin'
+})
+
+const isAdmin = computed(() => {
+  const userStr = localStorage.getItem('user')
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr)
+      return user.is_admin
+    } catch {
+      return false
+    }
+  }
+  return false
 })
 
 const networkDetails = computed<NetworkDetail[]>(() => {

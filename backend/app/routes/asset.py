@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify, session, send_file, wraps
+from flask import Blueprint, request, jsonify, session, send_file
+from functools import wraps
 from app import db
 from app.models.asset import Asset
 from app.models.mac_address import MacAddress
@@ -6,7 +7,6 @@ from app.services.asset_service import AssetService
 import pandas as pd
 from io import BytesIO
 import uuid
-from functools import wraps
 
 asset_bp = Blueprint('asset', __name__)
 
@@ -136,6 +136,9 @@ def update_asset(asset_id):
 @asset_bp.route('/assets/<asset_id>', methods=['DELETE'])
 @login_required
 def delete_asset(asset_id):
+    if not session.get('is_admin'):
+        return jsonify({'code': 403, 'message': '只有管理员可以删除资产'}), 403
+
     operator = request.args.get('operator', get_current_user())
 
     result, error = AssetService.delete_asset(asset_id, operator)
