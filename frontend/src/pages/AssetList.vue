@@ -76,7 +76,7 @@
         </el-table-column>
         <el-table-column label="配置" min-width="200" show-overflow-tooltip>
           <template #default="{ row }">
-            {{ row.cpu }}|{{ row.memory }}|{{ row.disk }}
+            {{ row.device_config }}|{{ row.software_info }}|{{ row.location_info }}
           </template>
         </el-table-column>
         <el-table-column label="备注" min-width="120" show-overflow-tooltip>

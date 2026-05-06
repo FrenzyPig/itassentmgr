@@ -12,9 +12,9 @@ class Asset(db.Model):
     machine_model = db.Column(db.String(200), nullable=False)
     machine_type = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(50), default='在库')
-    cpu = db.Column(db.String(200))
-    memory = db.Column(db.String(100))
-    disk = db.Column(db.String(200))
+    device_config = db.Column(db.String(200))
+    software_info = db.Column(db.String(200))
+    location_info = db.Column(db.String(200))
     serial_number = db.Column(db.String(200))
     remark = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=get_beijing_time)
@@ -33,9 +33,9 @@ class Asset(db.Model):
             'machine_model': self.machine_model,
             'machine_type': self.machine_type,
             'status': self.status,
-            'cpu': self.cpu,
-            'memory': self.memory,
-            'disk': self.disk,
+            'device_config': self.device_config,
+            'software_info': self.software_info,
+            'location_info': self.location_info,
             'serial_number': self.serial_number,
             'remark': self.remark,
             'created_at': format_datetime(self.created_at),
@@ -55,9 +55,9 @@ class Asset(db.Model):
             'machine_model': self.machine_model,
             'machine_type': self.machine_type,
             'status': self.status,
-            'cpu': self.cpu,
-            'memory': self.memory,
-            'disk': self.disk,
+            'device_config': self.device_config,
+            'software_info': self.software_info,
+            'location_info': self.location_info,
             'serial_number': self.serial_number,
             'remark': self.remark,
             'created_at': format_datetime(self.created_at),

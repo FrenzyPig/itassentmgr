@@ -19,9 +19,9 @@
           <el-descriptions-item label="机器型号">{{ asset.machine_model }}</el-descriptions-item>
           <el-descriptions-item label="机器类型">{{ asset.machine_type }}</el-descriptions-item>
           <el-descriptions-item label="状态">{{ asset.status }}</el-descriptions-item>
-          <el-descriptions-item label="CPU">{{ asset.cpu || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="内存">{{ asset.memory || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="硬盘">{{ asset.disk || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="设备配置">{{ asset.device_config || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="软件信息">{{ asset.software_info || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="位置信息">{{ asset.location_info || '-' }}</el-descriptions-item>
           <el-descriptions-item label="序列号">{{ asset.serial_number || '-' }}</el-descriptions-item>
           <el-descriptions-item label="备注" :span="2">{{ asset.remark || '-' }}</el-descriptions-item>
           <el-descriptions-item label="创建时间">{{ asset.created_at }}</el-descriptions-item>
@@ -88,14 +88,14 @@
         <el-form-item label="机器型号">
           <el-input v-model="editForm.machine_model" />
         </el-form-item>
-        <el-form-item label="CPU">
-          <el-input v-model="editForm.cpu" />
+        <el-form-item label="设备配置">
+          <el-input v-model="editForm.device_config" />
         </el-form-item>
-        <el-form-item label="内存">
-          <el-input v-model="editForm.memory" />
+        <el-form-item label="软件信息">
+          <el-input v-model="editForm.software_info" />
         </el-form-item>
-        <el-form-item label="硬盘">
-          <el-input v-model="editForm.disk" />
+        <el-form-item label="位置信息">
+          <el-input v-model="editForm.location_info" />
         </el-form-item>
         <el-form-item label="序列号">
           <el-input v-model="editForm.serial_number" />
@@ -192,9 +192,9 @@ interface NetworkDetail {
 const editForm = reactive({
   asset_code: '',
   machine_model: '',
-  cpu: '',
-  memory: '',
-  disk: '',
+  device_config: '',
+  software_info: '',
+  location_info: '',
   serial_number: '',
   remark: ''
 })
@@ -270,9 +270,9 @@ function initEditForm() {
   if (asset.value) {
     editForm.asset_code = asset.value.asset_code
     editForm.machine_model = asset.value.machine_model
-    editForm.cpu = asset.value.cpu || ''
-    editForm.memory = asset.value.memory || ''
-    editForm.disk = asset.value.disk || ''
+    editForm.device_config = asset.value.device_config || ''
+    editForm.software_info = asset.value.software_info || ''
+    editForm.location_info = asset.value.location_info || ''
     editForm.serial_number = asset.value.serial_number || ''
     editForm.remark = asset.value.remark || ''
   }
@@ -291,9 +291,9 @@ async function handleEdit() {
     const res: any = await assetApi.update(asset.value.id, {
       asset_code: editForm.asset_code,
       machine_model: editForm.machine_model,
-      cpu: editForm.cpu || undefined,
-      memory: editForm.memory || undefined,
-      disk: editForm.disk || undefined,
+      device_config: editForm.device_config || undefined,
+      software_info: editForm.software_info || undefined,
+      location_info: editForm.location_info || undefined,
       serial_number: editForm.serial_number || undefined,
       remark: editForm.remark || undefined,
       operator: currentUser.value

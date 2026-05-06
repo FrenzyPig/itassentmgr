@@ -39,9 +39,9 @@ export interface Asset {
     machine_model: string
     machine_type: '台式机' | '笔记本' | '打印/扫描' | '电视机' | '服务器' | '其它'
     status: '在库' | '使用中' | '报废'
-    cpu?: string
-    memory?: string
-    disk?: string
+    device_config?: string
+    software_info?: string
+    location_info?: string
     serial_number?: string
     remark?: string
     created_at: string
@@ -58,9 +58,9 @@ export interface AssetSimple {
     machine_model: string
     machine_type: '台式机' | '笔记本' | '打印/扫描' | '电视机' | '服务器' | '其它'
     status: '在库' | '使用中' | '报废'
-    cpu?: string
-    memory?: string
-    disk?: string
+    device_config?: string
+    software_info?: string
+    location_info?: string
     serial_number?: string
     remark?: string
     created_at: string

@@ -59,9 +59,9 @@ class AssetService:
             asset_code=asset_code,
             machine_model=data.get('machine_model'),
             machine_type=data.get('machine_type'),
-            cpu=data.get('cpu'),
-            memory=data.get('memory'),
-            disk=data.get('disk'),
+            device_config=data.get('device_config'),
+            software_info=data.get('software_info'),
+            location_info=data.get('location_info'),
             serial_number=data.get('serial_number'),
             remark=data.get('remark'),
             status=asset_status
@@ -136,12 +136,12 @@ class AssetService:
             asset.machine_model = data['machine_model']
         if 'machine_type' in data:
             asset.machine_type = data['machine_type']
-        if 'cpu' in data:
-            asset.cpu = data['cpu']
-        if 'memory' in data:
-            asset.memory = data['memory']
-        if 'disk' in data:
-            asset.disk = data['disk']
+        if 'device_config' in data:
+            asset.device_config = data['device_config']
+        if 'software_info' in data:
+            asset.software_info = data['software_info']
+        if 'location_info' in data:
+            asset.location_info = data['location_info']
         if 'serial_number' in data:
             asset.serial_number = data['serial_number']
         if 'remark' in data:

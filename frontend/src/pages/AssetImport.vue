@@ -49,16 +49,16 @@
               <el-button type="primary" link @click="addMac">+ 添加MAC地址</el-button>
             </el-form-item>
 
-            <el-form-item label="CPU">
-              <el-input v-model="form.cpu" placeholder="如: Intel i7-1165G7" />
+            <el-form-item label="设备配置">
+              <el-input v-model="form.device_config" placeholder="I7|16G|512G" />
             </el-form-item>
 
-            <el-form-item label="内存">
-              <el-input v-model="form.memory" placeholder="如: 16GB" />
+            <el-form-item label="软件信息">
+              <el-input v-model="form.software_info" placeholder="Windows 11 专业版" />
             </el-form-item>
 
-            <el-form-item label="硬盘">
-              <el-input v-model="form.disk" placeholder="如: 512GB SSD" />
+            <el-form-item label="位置信息">
+              <el-input v-model="form.location_info" placeholder="本部" />
             </el-form-item>
 
             <el-form-item label="序列号">
@@ -206,9 +206,9 @@ const form = reactive({
   mac_addresses: [
     { mac: '', remark: '有线' }
   ],
-  cpu: '',
-  memory: '',
-  disk: '',
+  device_config: '',
+  software_info: '',
+  location_info: '',
   serial_number: '',
   remark: ''
 })
@@ -260,9 +260,9 @@ async function handleSubmit() {
       machine_type: form.machine_type,
       asset_code: form.asset_code || undefined,
       mac_addresses: validMacs,
-      cpu: form.cpu || undefined,
-      memory: form.memory || undefined,
-      disk: form.disk || undefined,
+      device_config: form.device_config || undefined,
+      software_info: form.software_info || undefined,
+      location_info: form.location_info || undefined,
       serial_number: form.serial_number || undefined,
       remark: form.remark || undefined,
       operator: currentUser.value

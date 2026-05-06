@@ -26,9 +26,9 @@ export const assetApi = {
     machine_type: string
     asset_code?: string
     mac_addresses?: Array<{ mac: string; remark?: string }>
-    cpu?: string
-    memory?: string
-    disk?: string
+    device_config?: string
+    software_info?: string
+    location_info?: string
     serial_number?: string
     remark?: string
     operator?: string
