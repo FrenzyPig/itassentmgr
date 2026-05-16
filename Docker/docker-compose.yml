@@ -1,0 +1,24 @@
+services:
+  backend:
+    image: alechy/itam-backend
+    container_name: doto-asset-backend
+    volumes:
+      - ./instance:/app/instance
+    networks:
+      - doto-asset-network
+    restart: unless-stopped
+
+  frontend:
+    image: alechy/itam-frontend
+    container_name: doto-asset-frontend
+    ports:
+      - "3780:80"
+    depends_on:
+      - backend
+    networks:
+      - doto-asset-network
+    restart: unless-stopped
+
+networks:
+  doto-asset-network:
+    driver: bridge
